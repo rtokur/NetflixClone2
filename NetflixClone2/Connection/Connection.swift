@@ -83,6 +83,8 @@ class Connection {
             throw URLError(.badServerResponse)
         }
         let response = try JSONDecoder().decode(Detail.self, from: data)
+        let response2 = try? JSONSerialization.jsonObject(with: data, options: [])
+        print(response2)
         return response
     }
     // MARK: - Calling the creating url func and return the popular movie response

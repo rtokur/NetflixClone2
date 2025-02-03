@@ -79,6 +79,16 @@ class DetailVC: UIViewController {
         return playButton2
     }()
     
+    let favoriteButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .red
+        button.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        button.tintColor = .label
+        button.setTitle("Favorite", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        return button
+    }()
+    
     let activityIndicator : UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
@@ -92,6 +102,14 @@ class DetailVC: UIViewController {
         descriptionLabel.textAlignment = .left
         descriptionLabel.numberOfLines = .max
         return descriptionLabel
+    }()
+    
+    let genresLabel : UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.numberOfLines = 1
+        return label
     }()
     
     let titleLabel : UILabel = {
@@ -132,7 +150,14 @@ class DetailVC: UIViewController {
                 let hours = runtime / 60
                 let minutes = runtime / 60 % 60
                 runtimeLabel.text = "\(hours) hours \(minutes) minutes"
-                print(detail)
+                if let genres2 = detail?.genres {
+                    genres = genres2
+                    var genresName : [String] = []
+                    for i in 0..<(genres?.count ?? 0) {
+                        genresName.append(genres?[i].name ?? "")
+                    }
+                    genresLabel.text = "\(genresName.joined(separator: " • "))"
+                }
             }
         }
         else if let serieId = serie?.id {
@@ -140,9 +165,26 @@ class DetailVC: UIViewController {
                 detail = try await connection.getSerieDetail(serieId: serieId)
                 if let numberOfSeasons = detail?.numberOfSeasons, numberOfSeasons != 1 {
                     runtimeLabel.text = "\(numberOfSeasons) Seasons"
+                    if let genres2 = detail?.genres {
+                        genres = genres2
+                        var genresName : [String] = []
+                        for i in 0..<(genres?.count ?? 0) {
+                            genresName.append(genres?[i].name ?? "")
+                        }
+                        genresLabel.text = "\(genresName.joined(separator: " • "))"
+                    }
 
                 } else if let numberOfEpisodes = detail?.numberOfEpisodes {
                     runtimeLabel.text = "\(numberOfEpisodes) Episodes"
+                    if let genres2 = detail?.genres {
+                        genres = genres2
+                        var genresName : [String] = []
+                        for i in 0..<(genres?.count ?? 0) {
+                            genresName.append(genres?[i].name ?? "")
+                        }
+                        genresLabel.text = "\(genresName.joined(separator: " • "))"
+                    }
+                    
                 }
             }
         }
@@ -178,6 +220,8 @@ class DetailVC: UIViewController {
         }
         stackView.addArrangedSubview(titleLabel)
         
+        stackView.addArrangedSubview(genresLabel)
+        
         stackView.addArrangedSubview(stackView2)
         
 //      Setting datelabel text
@@ -205,6 +249,8 @@ class DetailVC: UIViewController {
             descriptionLabel.text = overview
         }
         stackView.addArrangedSubview(descriptionLabel)
+        
+        stackView.addArrangedSubview(favoriteButton)
         
         view.addSubview(activityIndicator)
     }
@@ -242,16 +288,19 @@ class DetailVC: UIViewController {
         }
  
         titleLabel.snp.makeConstraints { make in
-            make.height.equalTo(35)
+            make.height.equalTo(18)
+        }
+        genresLabel.snp.makeConstraints { make in
+            make.height.equalTo(18)
         }
         stackView2.snp.makeConstraints { make in
-            make.height.equalTo(20)
+            make.height.equalTo(18)
         }
         dateLabel.snp.makeConstraints { make in
-            make.height.equalTo(20)
+            make.height.equalTo(18)
         }
         runtimeLabel.snp.makeConstraints { make in
-            make.height.equalTo(20)
+            make.height.equalTo(18)
         }
 
         playButton2.snp.makeConstraints { make in
@@ -260,6 +309,10 @@ class DetailVC: UIViewController {
         }
         descriptionLabel.snp.makeConstraints { make in
             make.width.equalToSuperview()
+        }
+        favoriteButton.snp.makeConstraints { make in
+            make.height.equalTo(60)
+            make.width.equalTo(stackView).dividedBy(3)
         }
         
     }

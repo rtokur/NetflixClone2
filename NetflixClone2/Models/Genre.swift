@@ -8,6 +8,6 @@
 import Foundation
 
 class Genre: Codable {
-    let id: Int
-    let name: String
+    let id: Int?
+    let name: String?
 }
